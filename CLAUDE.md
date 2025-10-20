@@ -8,20 +8,42 @@ Real-time object detection application using YOLO11/YOLOv8 and PyTorch for webca
 
 ## Development Environment
 
-**Python Version**: Managed via `.python-version` file
+**Python Version**: Managed via `.python-version` file (Python 3.11+)
+
+**Virtual Environment**: `venv/` directory (included in project, excluded from git)
 
 **GPU Support**: PyTorch with CUDA 11.8 (`torch==2.5.1+cu118`)
 
 **Key Dependencies**:
 - `ultralytics==8.3.217` - YOLO11 and YOLOv8 implementation
 - `opencv-python==4.10.0.84` - Video capture and display
-- `torch==2.5.1+cu118` - GPU acceleration
+- `torch==2.5.1+cu118` - GPU acceleration with CUDA 11.8
 - `PyQt5` - GUI components (used for potential future features)
 
-**Install Dependencies**:
+**Setup Instructions**:
+
+1. Create and activate virtual environment:
+```bash
+# Windows
+python -m venv venv
+venv\Scripts\activate
+
+# Linux/Mac
+python -m venv venv
+source venv/bin/activate
+```
+
+2. Install PyTorch with CUDA support first:
+```bash
+pip install torch==2.5.1+cu118 torchaudio==2.5.1+cu118 torchvision==0.20.1+cu118 --index-url https://download.pytorch.org/whl/cu118
+```
+
+3. Install remaining dependencies:
 ```bash
 pip install -r requirements.txt
 ```
+
+**Note**: PyTorch CUDA builds must be installed from PyTorch's index, not PyPI.
 
 ## Running the Application
 
