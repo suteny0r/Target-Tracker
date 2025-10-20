@@ -8,6 +8,8 @@ import ctypes
 import threading
 import queue
 
+__version__ = "1.0.0"
+
 # Apply DPI awareness on Windows to prevent scaling issues
 if platform.system() == "Windows":
     try:
@@ -74,6 +76,8 @@ def process_webcam(camera_index=0, imgsz=640, conf=0.5, force_cpu=False, video_s
     Args:
         threaded: If True, uses separate thread for frame reading to overlap decode with inference
     """
+    print(f"Target Tracker v{__version__}")
+
     # Detect device and GPU details
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
     device_name = torch.cuda.get_device_name(0) if device == 'cuda' else "CPU"
