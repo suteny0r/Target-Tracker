@@ -1,0 +1,11 @@
+Write a Python script for real-time object detection using a USB webcam and YOLOv8 with PyTorch. The script should:
+
+Validate the webcam connection before starting.
+Use the YOLOv8 model for object detection.
+Leverage GPU acceleration (e.g., NVIDIA RTX 3090) if available, otherwise fall back to CPU.
+Enable Automatic Mixed Precision (AMP) for GPU inference using torch.amp.autocast.
+Draw rectangles around detected objects and display labels with high-resolution text using OpenCV.
+Include error handling for invalid configurations or webcam access issues.
+Use a high-accuracy model (yolov8x.pt) with adjustable confidence threshold and image resolution (e.g., 1280x1280).
+Avoid deprecated methods like torch.cuda.amp.autocast and use torch.amp.autocast instead.
+The script should be ready to run with clear comments for each section.
