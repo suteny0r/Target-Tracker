@@ -83,9 +83,13 @@ def process_webcam(camera_index=0, imgsz=640, conf=0.5, force_cpu=False, video_s
     """
     print(f"Target Tracker v{__version__}")
 
-    # Detect device and GPU details
-    device = 'cuda' if torch.cuda.is_available() else 'cpu'
-    device_name = torch.cuda.get_device_name(0) if device == 'cuda' else "CPU"
+    # Detect device and GPU details (respect force_cpu flag)
+    if force_cpu:
+        device = 'cpu'
+        device_name = "CPU (forced)"
+    else:
+        device = 'cuda' if torch.cuda.is_available() else 'cpu'
+        device_name = torch.cuda.get_device_name(0) if device == 'cuda' else "CPU"
     print(f"Using device: {device_name}")
 
     # Select default model based on device (YOLO11 for better performance)
