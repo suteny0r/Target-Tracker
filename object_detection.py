@@ -286,7 +286,7 @@ if __name__ == "__main__":
     parser.add_argument("--imgsz", type=int, default=640, help="Image size for YOLO model (default: 640).")
     parser.add_argument("--conf", type=float, default=0.5, help="Confidence threshold for object detection (default: 0.5).")
     parser.add_argument("--no-display", action="store_true", help="Run in benchmark mode without display (shows pure GPU performance).")
-    parser.add_argument("--threaded", action="store_true", help="Use threaded frame reading to overlap decode with inference (30-40% faster).")
+    parser.add_argument("--threaded", action="store_true", help="Use threaded frame reading to overlap decode with inference (30-40%% faster).")
     args = parser.parse_args()
 
     process_webcam(camera_index=args.camera_index, imgsz=args.imgsz, conf=args.conf, force_cpu=args.force_cpu, video_source=args.video, no_display=args.no_display, threaded=args.threaded)
