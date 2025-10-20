@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Real-time object detection application using YOLOv8 and PyTorch for webcams and video files. Optimized for GPU acceleration (NVIDIA CUDA) with automatic CPU fallback.
+Real-time object detection application using YOLO11/YOLOv8 and PyTorch for webcams and video files. Optimized for GPU acceleration (NVIDIA CUDA) with automatic CPU fallback. Defaults to YOLO11 models for best performance.
 
 ## Development Environment
 
@@ -13,7 +13,7 @@ Real-time object detection application using YOLOv8 and PyTorch for webcams and 
 **GPU Support**: PyTorch with CUDA 11.8 (`torch==2.5.1+cu118`)
 
 **Key Dependencies**:
-- `ultralytics==8.3.36` - YOLOv8 implementation
+- `ultralytics==8.3.217` - YOLO11 and YOLOv8 implementation
 - `opencv-python==4.10.0.84` - Video capture and display
 - `torch==2.5.1+cu118` - GPU acceleration
 - `PyQt5` - GUI components (used for potential future features)
@@ -92,14 +92,25 @@ When the application is running with display enabled, use these keypresses to ad
 
 ## Available YOLO Models
 
-Models in repository (ordered by size/accuracy):
-- `yolov8n.pt` - Nano (fastest, least accurate)
+**YOLO11 Models** (current, recommended):
+- `yolo11n.pt` - Nano (fastest, least accurate)
+- `yolo11s.pt` - Small (default on CPU)
+- `yolo11m.pt` - Medium
+- `yolo11l.pt` - Large
+- `yolo11x.pt` - Extra large (default on GPU, most accurate)
+
+**YOLOv8 Models** (legacy, still supported):
+- `yolov8n.pt` - Nano
 - `yolov8s.pt` - Small
 - `yolov8m.pt` - Medium
 - `yolov8l.pt` - Large
-- `yolov8x.pt` - Extra large (default on GPU, most accurate)
+- `yolov8x.pt` - Extra large
 
-Default selection: `yolov8x` on GPU, `yolov8s` on CPU
+**Default selection**: `yolo11x` on GPU, `yolo11s` on CPU
+
+**Performance**: YOLO11 models are ~10-15% faster and ~5-10% more accurate than equivalent YOLOv8 models.
+
+**Note**: All models auto-download from Ultralytics on first use (not included in repository).
 
 ## Benchmarking
 
@@ -128,26 +139,31 @@ Output: `dist/object_detection.exe` (Windows)
 
 **Core Components**:
 
-1. **FrameReader Thread** (lines 25-51): Asynchronous frame capture
+1. **Model Selection** (lines 20-26): Dual model support
+   - YOLO11 models (default, lines 24): Current generation, better performance
+   - YOLOv8 models (legacy, line 22): Backward compatibility
+   - Runtime switching via W/S keys allows toggling between all 10 models
+
+2. **FrameReader Thread** (lines 32-58): Asynchronous frame capture
    - Decouples video decode (CPU) from inference (GPU)
    - Uses queue to buffer frames (max 5)
    - Enables 30-40% performance boost with `--threaded` flag
 
-2. **DPI Awareness** (lines 11-16): Windows-specific fix
+3. **DPI Awareness** (lines 14-18): Windows-specific fix
    - Prevents 200% scaling issues on high-DPI displays
    - Uses `ctypes.windll.shcore.SetProcessDpiAwareness(1)`
 
-3. **Model Warmup** (lines 91-96): Performance optimization
+4. **Model Warmup** (lines 99-105): Performance optimization
    - Runs 3 dummy inferences before processing
    - Ensures consistent timing measurements
    - Uses `torch.amp.autocast` for mixed precision
 
-4. **Two-Stage Rendering Pipeline**:
+5. **Two-Stage Rendering Pipeline**:
    - **Inference Stage**: Frame resized to `imgsz` (default 640x640)
    - **Display Stage**: Frame scaled to selected display resolution (480p/720p/1080p)
    - Bounding boxes scaled from inference resolution to display resolution
 
-5. **Shadowed Text Rendering** (lines 53-68):
+6. **Shadowed Text Rendering** (lines 57-75):
    - Translucent background boxes for readability
    - Used for FPS, resolution, and model info overlays
    - Uses `cv2.addWeighted` for alpha blending

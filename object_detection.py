@@ -8,7 +8,7 @@ import ctypes
 import threading
 import queue
 
-__version__ = "1.0.0"
+__version__ = "1.1.0"
 
 # Apply DPI awareness on Windows to prevent scaling issues
 if platform.system() == "Windows":
@@ -18,7 +18,12 @@ if platform.system() == "Windows":
         print(f"Failed to set DPI awareness: {e}")
 
 # YOLO models ordered by size and speed
-YOLO_MODELS = ['yolov8n', 'yolov8s', 'yolov8m', 'yolov8l', 'yolov8x']
+# YOLOv8 models (legacy)
+YOLOV8_MODELS = ['yolov8n', 'yolov8s', 'yolov8m', 'yolov8l', 'yolov8x']
+# YOLO11 models (current - faster and more accurate)
+YOLO11_MODELS = ['yolo11n', 'yolo11s', 'yolo11m', 'yolo11l', 'yolo11x']
+# Combined list for model switching
+YOLO_MODELS = YOLO11_MODELS + YOLOV8_MODELS
 
 # Supported resolutions (16:9 aspect ratio)
 RESOLUTIONS = [(1920, 1080), (1280, 720), (854, 480)]  # (Width, Height)
@@ -71,7 +76,7 @@ def draw_shadowed_text(frame, text, position, font, font_scale, color, thickness
 
 def process_webcam(camera_index=0, imgsz=640, conf=0.5, force_cpu=False, video_source=None, no_display=False, threaded=False):
     """
-    Process webcam feed or video file and perform object detection using YOLOv8.
+    Process webcam feed or video file and perform object detection using YOLO11 (or YOLOv8).
 
     Args:
         threaded: If True, uses separate thread for frame reading to overlap decode with inference
@@ -83,8 +88,8 @@ def process_webcam(camera_index=0, imgsz=640, conf=0.5, force_cpu=False, video_s
     device_name = torch.cuda.get_device_name(0) if device == 'cuda' else "CPU"
     print(f"Using device: {device_name}")
 
-    # Select default model based on device
-    current_model_index = YOLO_MODELS.index('yolov8x' if device == 'cuda' else 'yolov8s')
+    # Select default model based on device (YOLO11 for better performance)
+    current_model_index = YOLO_MODELS.index('yolo11x' if device == 'cuda' else 'yolo11s')
     model_path = YOLO_MODELS[current_model_index]
     print(f"Using initial model: {model_path}")
 
@@ -218,7 +223,7 @@ def process_webcam(camera_index=0, imgsz=640, conf=0.5, force_cpu=False, video_s
                 feedback_text = ""
 
             # Display the frame
-            cv2.imshow('YOLOv8 Object Detection', frame_display)
+            cv2.imshow('Target Tracker - Object Detection', frame_display)
 
             # Check for key presses
             key = cv2.waitKey(1) & 0xFF
@@ -274,7 +279,7 @@ def process_webcam(camera_index=0, imgsz=640, conf=0.5, force_cpu=False, video_s
             print(f"Actual processing FPS: {fps:.1f}")
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="YOLOv8 Object Detection with Webcam or Video File")
+    parser = argparse.ArgumentParser(description="YOLO11/YOLOv8 Object Detection with Webcam or Video File")
     parser.add_argument("--force-cpu", action="store_true", help="Force the use of CPU instead of GPU or MPS.")
     parser.add_argument("--camera-index", type=int, default=0, help="Index of the webcam (default: 0).")
     parser.add_argument("--video", type=str, default=None, help="Path to video file (if not specified, uses webcam).")
